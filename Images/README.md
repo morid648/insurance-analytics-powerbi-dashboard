@@ -4,9 +4,9 @@ This folder contains screenshots of the Power BI dashboard.
 
 ## 📁 Files Included
 
-* **Dashboard_Overview.png** → Main dashboard view
-* **Sales_Channel_Analysis.png** → Sales performance analysis
-* **Customer_Segmentation.png** → Age group and customer insights
+* **Dashboard_Overview.jpg** → Main dashboard view
+* **Sales_Channel_Analysis.jpg** → Sales performance analysis
+* **Customer_Segmentation.jpg** → Age group and customer insights
 
 ## 📌 Description
 
