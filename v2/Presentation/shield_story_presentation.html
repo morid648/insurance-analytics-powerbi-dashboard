@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Month That Changed Everything — Shield Insurance Data Story</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0f1e;--bg-deep:#050810;--surface:#111827;--text:#f1f5f9;--text-sec:#cbd5e1;--text-muted:#64748b;--gold:#C9A84C;--gold-light:#E8D5B5;--gold-dark:#8B6914;--red:#ef4444;--green:#22c55e;--amber:#f59e0b;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg);height:100vh;width:100vw;overflow:hidden;font-family:'Manrope',sans-serif;color:var(--text);}
+.deck{width:100vw;height:100vh;position:relative;}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transform:scale(0.97) translateY(12px);transition:opacity 0.65s ease,transform 0.65s ease;pointer-events:none;overflow:hidden;background:var(--bg);}
+.slide.active{opacity:1;transform:scale(1) translateY(0);pointer-events:all;}
+.slide>.content{position:relative;z-index:2;width:100%;max-width:1100px;padding:clamp(1.5rem,3vw,3rem);}
+.gradient-mesh{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);}
+.blob-1{animation:floatA 12s ease-in-out infinite;}
+.blob-2{animation:floatB 16s ease-in-out infinite;}
+.blob-3{animation:floatA 20s ease-in-out infinite reverse;}
+@keyframes floatA{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(50px,-40px) scale(1.1);}66%{transform:translate(-30px,30px) scale(0.92);}}
+@keyframes floatB{0%,100%{transform:translate(0,0) scale(1) rotate(0);}33%{transform:translate(-50px,-60px) scale(1.12) rotate(3deg);}66%{transform:translate(40px,35px) scale(0.88) rotate(-2deg);}}
+.slide::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");background-repeat:repeat;background-size:256px 256px;opacity:0.025;mix-blend-mode:overlay;}
+.slide::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,0.5) 100%);}
+.reveal{opacity:0;transform:translateY(22px);}
+
+/* NAV */
+.nav-controls{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;z-index:100;background:rgba(10,15,30,0.85);backdrop-filter:blur(14px);padding:9px 22px;border-radius:40px;border:1px solid rgba(201,168,76,0.2);}
+.nav-btn{width:36px;height:36px;border:none;background:rgba(201,168,76,0.12);color:var(--gold);border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.3s;}
+.nav-btn:hover{background:rgba(201,168,76,0.28);}
+.slide-dots{display:flex;gap:7px;}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(201,168,76,0.2);cursor:pointer;transition:background 0.3s,transform 0.3s;}
+.dot.active{background:var(--gold);transform:scale(1.4);}
+.slide-counter{font-size:0.75rem;color:var(--text-muted);min-width:38px;text-align:center;}
+
+/* COMPONENTS */
+.section-tag{display:inline-block;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--gold);background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);border-radius:20px;padding:3px 12px;margin-bottom:0.9rem;}
+.insight-card{border-left:3px solid var(--gold);background:rgba(255,255,255,0.03);border-radius:0 10px 10px 0;padding:0.9rem 1.2rem;}
+.kpi-card{background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.18);border-radius:14px;padding:1.2rem 1.5rem;transition:transform 0.3s,box-shadow 0.3s;}
+.kpi-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(201,168,76,0.15);}
+.rec-item{display:flex;gap:12px;align-items:flex-start;padding:0.85rem 1rem;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(201,168,76,0.1);}
+.rec-num{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#C9A84C,#8B6914);color:#0a0f1e;font-size:0.72rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.channel-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:0.78rem;font-weight:600;}
+.skill-chip{background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.18);border-radius:8px;padding:0.65rem 0.8rem;text-align:center;font-size:0.72rem;font-weight:600;color:var(--gold-light);}
+@keyframes glowPulse{0%,100%{text-shadow:0 0 20px rgba(201,168,76,0.5),0 0 40px rgba(201,168,76,0.2);}50%{text-shadow:0 0 35px rgba(201,168,76,0.85),0 0 70px rgba(201,168,76,0.35);}}
+.glow-pulse{animation:glowPulse 3s ease-in-out infinite;}
+@keyframes floatIcon{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+.float-icon{animation:floatIcon 3s ease-in-out infinite;}
+
+/* BAR CHART */
+.bar-chart-wrap{display:flex;align-items:flex-end;gap:clamp(6px,1.2vw,14px);height:clamp(110px,17vh,160px);}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;}
+.bar{border-radius:6px 6px 0 0;width:100%;transform-origin:bottom;transform:scaleY(0);transition:transform 0.7s cubic-bezier(0.34,1.56,0.64,1);}
+.bar-val{font-size:clamp(0.6rem,0.85vw,0.78rem);color:var(--text-sec);font-weight:600;white-space:nowrap;}
+.bar-lbl{font-size:clamp(0.55rem,0.75vw,0.7rem);color:var(--text-muted);text-align:center;}
+
+/* RISK BARS */
+.risk-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+.risk-label{font-size:0.72rem;color:#94a3b8;width:50px;flex-shrink:0;}
+.risk-track{flex:1;height:18px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;}
+.risk-fill{height:100%;border-radius:4px;width:0;transition:width 0.8s ease;}
+.risk-pct{font-size:0.72rem;color:var(--text);font-weight:600;width:42px;text-align:right;flex-shrink:0;}
+
+/* HORIZ BAR */
+.h-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.h-bar-lbl{font-size:0.75rem;color:#94a3b8;width:90px;flex-shrink:0;text-align:right;}
+.h-bar-track{flex:1;height:22px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden;}
+.h-bar-fill{height:100%;border-radius:4px;width:0;transition:width 0.8s ease;display:flex;align-items:center;padding-left:8px;font-size:0.7rem;font-weight:700;color:#0a0f1e;}
+
+/* WATERFALL */
+.wf-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.wf-label{font-size:0.72rem;color:#94a3b8;width:130px;flex-shrink:0;}
+.wf-val{font-size:0.9rem;font-weight:700;}
+
+/* TABLE */
+table.cmp{width:100%;border-collapse:collapse;font-size:0.78rem;}
+table.cmp th{background:rgba(201,168,76,0.12);color:var(--gold);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;padding:8px 12px;text-align:left;border:1px solid rgba(201,168,76,0.15);}
+table.cmp td{padding:8px 12px;border:1px solid rgba(255,255,255,0.05);color:var(--text-sec);}
+table.cmp tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+.td-red{color:var(--red);font-weight:700;}
+.td-gold{color:var(--gold);font-weight:700;}
+.td-green{color:var(--green);font-weight:700;}
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 0 — TITLE SLIDE
+═══════════════════════════════════════════════ -->
+<div class="slide active" data-slide="0">
+  <div class="gradient-mesh">
+    <div class="blob blob-1" style="width:700px;height:700px;top:-160px;right:-160px;background:#C9A84C;opacity:0.13;"></div>
+    <div class="blob blob-2" style="width:450px;height:450px;bottom:-120px;left:-100px;background:#8B6914;opacity:0.10;"></div>
+    <div class="blob blob-3" style="width:280px;height:280px;top:40%;left:5%;background:#E8D5B5;opacity:0.07;"></div>
+  </div>
+  <canvas class="particle-canvas" style="position:absolute;inset:0;z-index:1;width:100%;height:100%;"></canvas>
+  <div class="content" style="text-align:center;">
+    <div class="reveal" style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.2em;color:var(--text-muted);margin-bottom:1rem;">CodeBasics Virtual Internship &nbsp;·&nbsp; Power BI Case Study</div>
+    <div class="reveal" style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:1.2rem;">
+      <div style="width:48px;height:1px;background:linear-gradient(90deg,transparent,var(--gold));"></div>
+      <span style="font-size:1.6rem;">🛡️</span>
+      <div style="width:48px;height:1px;background:linear-gradient(90deg,var(--gold),transparent);"></div>
+    </div>
+    <h1 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(2.4rem,5.5vw,4.8rem);font-weight:700;background:linear-gradient(135deg,#C9A84C,#E8D5B5,#C9A84C);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;margin-bottom:0.6rem;letter-spacing:-0.01em;">The Month That Changed<br>Everything</h1>
+    <p class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.1rem,2.2vw,1.6rem);color:var(--gold-light);font-style:italic;margin-bottom:1.8rem;letter-spacing:0.02em;">A Data Story from Shield Insurance</p>
+    <div style="width:80px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 1.8rem;" class="reveal"></div>
+    <div class="reveal" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:1.8rem;">
+      <span class="channel-badge" style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);color:var(--gold);">Power BI</span>
+      <span class="channel-badge" style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);color:var(--gold);">DAX</span>
+      <span class="channel-badge" style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);color:var(--gold);">KPI Design</span>
+      <span class="channel-badge" style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);color:var(--gold);">Executive Storytelling</span>
+      <span class="channel-badge" style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);color:var(--gold);">Data Analytics</span>
+    </div>
+    <div class="reveal" style="display:inline-flex;align-items:center;gap:10px;padding:10px 24px;border:1px solid rgba(201,168,76,0.2);border-radius:30px;background:rgba(201,168,76,0.06);">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--gold);animation:glowPulse 2s ease-in-out infinite;"></div>
+      <span style="font-size:0.78rem;color:var(--text-muted);letter-spacing:0.06em;">Anshul Chaudhary &nbsp;·&nbsp; Data Analytics Portfolio &nbsp;·&nbsp; 2025</span>
+    </div>
+    <p class="reveal" style="margin-top:1.6rem;font-size:0.72rem;color:rgba(100,116,139,0.6);letter-spacing:0.1em;">PRESS → TO BEGIN</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 1 — THE HOOK (now slide index 1)
+═══════════════════════════════════════════════ -->
+<div class="slide" data-slide="1">
+  <div class="gradient-mesh">
+    <div class="blob blob-1" style="width:600px;height:600px;top:-140px;right:-140px;background:#C9A84C;opacity:0.11;"></div>
+    <div class="blob blob-2" style="width:380px;height:380px;bottom:-110px;left:-90px;background:#8B6914;opacity:0.09;"></div>
+    <div class="blob blob-3" style="width:240px;height:240px;top:50%;left:8%;background:#E8D5B5;opacity:0.06;"></div>
+  </div>
+  <canvas class="particle-canvas" style="position:absolute;inset:0;z-index:1;width:100%;height:100%;"></canvas>
+  <div class="content" style="text-align:center;">
+    <p class="reveal" style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.18em;color:var(--text-muted);margin-bottom:1.2rem;">Shield Insurance · Data Story · 2023</p>
+    <div class="reveal glow-pulse" style="font-family:'Cormorant',serif;font-size:clamp(5rem,14vw,11rem);font-weight:700;color:var(--gold);line-height:1;letter-spacing:-0.02em;">₹264M</div>
+    <div class="reveal" style="font-size:clamp(1rem,2.5vw,1.6rem);color:var(--text-muted);margin:0.5rem 0 1.4rem;letter-spacing:0.06em;">March 2023</div>
+    <div class="reveal" style="width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 1.4rem;"></div>
+    <p class="reveal" style="font-size:clamp(0.95rem,1.8vw,1.25rem);color:var(--text-sec);max-width:640px;margin:0 auto 0.6rem;line-height:1.6;">One month generated more revenue than the previous four combined.</p>
+    <p class="reveal" style="font-size:clamp(0.78rem,1.3vw,0.98rem);color:var(--text-muted);font-style:italic;">This is the story of what the numbers underneath revealed.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 2 — MEET THE BUSINESS
+═══════════════════════════════════════════════ -->
+<div class="slide" data-slide="2">
+  <div class="gradient-mesh">
+    <div class="blob blob-1" style="width:400px;height:400px;top:-80px;right:-80px;background:#C9A84C;opacity:0.08;"></div>
+    <div class="blob blob-2" style="width:280px;height:280px;bottom:-60px;left:-50px;background:#8B6914;opacity:0.07;"></div>
+  </div>
+  <div class="content">
+    <div class="section-tag reveal">The Business</div>
+    <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.9rem,3.8vw,2.9rem);font-weight:700;color:var(--gold-light);margin-bottom:0.4rem;line-height:1.15;">Before We Explain the Spike —<br><span style="color:var(--gold);">Here's What We Were Looking At.</span></h2>
+    <p class="reveal" style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.4rem;">Shield Insurance · 5 Cities · 4 Channels · 26,800 Customers · 6 Months</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.2rem;">
+      <div class="kpi-card reveal" style="text-align:center;"><div style="font-size:1.8rem;color:var(--gold);">🏙️</div><div style="font-size:1.4rem;font-weight:800;color:var(--gold);">5</div><div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Cities</div></div>
+      <div class="kpi-card reveal" style="text-align:center;"><div style="font-size:1.8rem;color:var(--gold);">📡</div><div style="font-size:1.4rem;font-weight:800;color:var(--gold);">4</div><div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Channels</div></div>
+      <div class="kpi-card reveal" style="text-align:center;"><div style="font-size:1.8rem;color:var(--gold);">👥</div><div style="font-size:1.4rem;font-weight:800;color:var(--gold);">26.8K</div><div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Customers</div></div>
+      <div class="kpi-card reveal" style="text-align:center;"><div style="font-size:1.8rem;color:var(--gold);">📅</div><div style="font-size:1.4rem;font-weight:800;color:var(--gold);">6</div><div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Months</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="insight-card reveal"><strong style="color:var(--gold);font-size:0.8rem;">Period:</strong><span style="font-size:0.78rem;color:#94a3b8;"> Nov 2022 – Apr 2023</span></div>
+      <div class="insight-card reveal"><strong style="color:var(--gold);font-size:0.8rem;">Tools:</strong><span style="font-size:0.78rem;color:#94a3b8;"> Power BI · DAX · Executive Dashboard Design</span></div>
+      <div class="insight-card reveal"><strong style="color:var(--gold);font-size:0.8rem;">4 Analytical Lenses:</strong><span style="font-size:0.75rem;color:#94a3b8;"> Executive Pulse · Risk Exposure · Channel Intelligence · Customer DNA</span></div>
+      <div class="insight-card reveal"><strong style="color:var(--gold);font-size:0.8rem;">Central Question:</strong><span style="font-size:0.75rem;color:#94a3b8;font-style:italic;"> "Are we growing sustainably — or just getting lucky?"</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 3 — THE QUIET MONTHS
+═══════════════════════════════════════════════ -->
+<div class="slide" data-slide="3">
+  <div class="gradient-mesh">
+    <div class="blob blob-1" style="width:350px;height:350px;top:-70px;left:-70px;background:#8B6914;opacity:0.08;"></div>
+    <div class="blob blob-2" style="width:280px;height:280px;bottom:-60px;right:-50px;background:#C9A84C;opacity:0.07;"></div>
+  </div>
+  <div class="content">
+    <div class="section-tag reveal">Revenue Pulse · Act I</div>
+    <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.8rem,3.5vw,2.7rem);font-weight:700;color:var(--gold-light);margin-bottom:0.2rem;">For Four Straight Months, the Business Was Predictably Flat.</h2>
+    <p class="reveal" style="font-size:0.9rem;color:var(--text-muted);margin-bottom:1.4rem;font-style:italic;">Stable. Consistent. Almost boring.</p>
+    <div class="reveal bar-chart-wrap" id="bars-s3" style="margin-bottom:1.2rem;padding:0 0.5rem;">
+      <div class="bar-col"><div class="bar" style="height:88px;background:rgba(201,168,76,0.35);"></div><div class="bar-val">₹132M</div><div class="bar-lbl">Nov '22</div></div>
+      <div class="bar-col"><div class="bar" style="height:104px;background:rgba(201,168,76,0.35);"></div><div class="bar-val">₹156M</div><div class="bar-lbl">Dec '22</div></div>
+      <div class="bar-col"><div class="bar" style="height:94px;background:rgba(201,168,76,0.35);"></div><div class="bar-val">₹141M</div><div class="bar-lbl">Jan '23</div></div>
+      <div class="bar-col"><div class="bar" style="height:96px;background:rgba(201,168,76,0.35);"></div><div class="bar-val">₹143M</div><div class="bar-lbl">Feb '23</div></div>
+      <div class="bar-col"><div class="bar" style="height:20px;background:rgba(255,255,255,0.06);"></div><div class="bar-val" style="color:rgba(255,255,255,0.15);">???</div><div class="bar-lbl" style="color:rgba(255,255,255,0.15);">Mar '23</div></div>
+      <div class="bar-col"><div class="bar" style="height:20px;background:rgba(255,255,255,0.06);"></div><div class="bar-val" style="color:rgba(255,255,255,0.15);">???</div><div class="bar-lbl" style="color:rgba(255,255,255,0.15);">Apr '23</div></div>
+    </div>
+    <div class="insight-card reveal"><p style="font-size:0.82rem;color:#94a3b8;line-height:1.6;">Revenue moved in a <strong style="color:var(--gold-light);">₹132M–₹156M band</strong>. Customers held at <strong style="color:var(--gold-light);">3.8K–4.0K per month</strong>. Nothing suggested what was coming.</p></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 4 — THE SPIKE
+═══════════════════════════════════════════════ -->
+<div class="slide" data-slide="4">
+  <div class="gradient-mesh">
+    <div class="blob blob-1" style="width:500px;height:500px;top:-100px;right:-100px;background:#C9A84C;opacity:0.12;"></div>
+    <div class="blob blob-2" style="width:300px;height:300px;bottom:-70px;left:-60px;background:#8B6914;opacity:0.08;"></div>
+  </div>
+  <div class="content">
+    <div class="section-tag reveal">Revenue Pulse · Act II</div>
+    <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.8rem,3.5vw,2.7rem);font-weight:700;color:var(--gold);margin-bottom:0.2rem;">Then March Arrived. ₹264M. 7,100 Customers. Nothing Like It Before.</h2>
+    <p class="reveal" style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.2rem;">+84% revenue jump vs February · Acquisition nearly doubled · Every city and every channel surged simultaneously</p>
+    <div class="reveal bar-chart-wrap" id="bars-s4" style="margin-bottom:1rem;padding:0 0.5rem;">
+      <div class="bar-col"><div class="bar" style="height:88px;background:rgba(201,168,76,0.3);"></div><div class="bar-val">₹132M</div><div class="bar-lbl">Nov '22</div></div>
+      <div class="bar-col"><div class="bar" style="height:104px;background:rgba(201,168,76,0.3);"></div><div class="bar-val">₹156M</div><div class="bar-lbl">Dec '22</div></div>
+      <div class="bar-col"><div class="bar" style="height:94px;background:rgba(201,168,76,0.3);"></div><div class="bar-val">₹141M</div><div class="bar-lbl">Jan '23</div></div>
+      <div class="bar-col"><div class="bar" style="height:96px;background:rgba(201,168,76,0.3);"></div><div class="bar-val">₹143M</div><div class="bar-lbl">Feb '23</div></div>
+      <div class="bar-col" id="march-col">
+        <div class="bar" style="height:160px;background:linear-gradient(180deg,#F5C842,#C9A84C);box-shadow:0 0 30px rgba(201,168,76,0.5);"></div>
+        <div class="bar-val" style="color:var(--gold);font-weight:800;">₹264M</div>
+        <div class="bar-lbl" style="color:var(--gold);">Mar '23</div>
+      </div>
+      <div class="bar-col"><div class="bar" style="height:103px;background:rgba(201,168,76,0.3);"></div><div class="bar-val">₹154M</div><div class="bar-lbl">Apr '23</div></div>
+    </div>
+    <div class="insight-card reveal" style="border-left-color:var(--amber);">
+      <p style="font-size:0.82rem;color:#94a3b8;font-style:italic;">"But the real question wasn't what happened in March. It was <strong style="color:var(--gold);">what happened next.</strong>"</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 5 — THE DROP
+═══════════════════════════════════════════════ -->
+<div class="slide" data-slide="5">
+  <div class="gradient-mesh">
+    <div class="blob blob-1" style="width:400px;height:400px;top:-80px;left:-80px;background:#ef4444;opacity:0.06;"></div>
+    <div class="blob blob-2" style="width:300px;height:300px;bottom:-60px;right:-60px;background:#C9A84C;opacity:0.07;"></div>
+  </div>
+  <div class="content">
+    <div class="section-tag reveal">Revenue Pulse · Act III</div>
+    <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.8rem,3.5vw,2.7rem);font-weight:700;color:var(--gold-light);margin-bottom:0.3rem;">April Revenue Fell 41.7%.<br><span style="color:var(--gold);">The Market Asked: Collapse — or Correction?</span></h2>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:1.2rem 0;">
+      <div class="kpi-card reveal" style="text-align:center;">
+        <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:0.4rem;">Revenue</div>
+        <div style="font-size:clamp(1.4rem,2.5vw,2rem);font-weight:800;color:var(--text);">₹154M</div>
+        <div style="font-size:0.82rem;font-weight:700;color:var(--red);margin-top:0.3rem;">↓ −41.7% MoM</div>
+      </div>
+      <div class="kpi-card reveal" style="text-align:center;">
+        <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:0.4rem;">Customers</div>
+        <div style="font-size:clamp(1.4rem,2.5vw,2rem);font-weight:800;color:var(--text);">4,100</div>
+        <div style="font-size:0.82rem;font-weight:700;color:var(--red);margin-top:0.3rem;">↓ −41.4% MoM</div>
+      </div>
+      <div class="kpi-card reveal" style="text-align:center;">
+        <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:0.4rem;">Policies Sold</div>
+        <div style="font-size:clamp(1.4rem,2.5vw,2rem);font-weight:800;color:var(--text);">4,149</div>
+        <div style="font-size:0.82rem;font-weight:700;color:var(--red);margin-top:0.3rem;">↓ −41.4% MoM</div>
+      </div>
+      <div class="kpi-card reveal" style="text-align:center;border-color:rgba(34,197,94,0.25);">
+        <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:0.4rem;">Settlement Risk</div>
+        <div style="font-size:clamp(1.4rem,2.5vw,2rem);font-weight:800;color:var(--text);">60.6%</div>
+        <div style="font-size:0.82rem;font-weight:700;color:var(--green);margin-top:0.3rem;">⬦ −0.3% MoM</div>
+      </div>
+    </div>
+    <div class="insight-card reveal" style="margin-bottom:0.7rem;"><p style="font-size:0.82rem;color:#94a3b8;">Three metrics collapsed. One didn't — <strong style="color:var(--gold);">settlement risk</strong>. Business volume dropped. Risk exposure <em>stayed</em>.</p></div>
+    <div class="insight-card reveal" style="border-left-color:var(--amber);"><p style="font-size:0.82rem;color:var(--amber);font-style:italic;">April's ₹154M still <strong>exceeded every single pre-March month</strong>. This was normalization, not deterioration.</p></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 6 — GEOGRAPHIC LAYER
+═══════════════════════════════════════════════ -->
+<div class="slide" data-slide="6">
+  <div class="gradient-mesh">
+    <div class="blob blob-1" style="width:380px;height:380px;top:-80px;right:-80px;background:#C9A84C;opacity:0.08;"></div>
+    <div class="blob blob-2" style="width:260px;height:260px;bottom:-50px;left:-40px;background:#8B6914;opacity:0.07;"></div>
+  </div>
+  <div class="content">
+    <div class="section-tag reveal">Geographic Layer</div>
+    <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.8rem,3.5vw,2.7rem);font-weight:700;color:var(--gold-light);margin-bottom:0.2rem;">Pull One City Out — and the Revenue Story Changes Completely.</h2>
+    <p class="reveal" style="font-size:0.85rem;color:var(--gold);margin-bottom:1.2rem;">Delhi NCR isn't just the top city. It's holding up <strong>40.6%</strong> of the entire business.</p>
+    <div id="city-bars" style="margin-bottom:1rem;">
+      <div class="h-bar-row reveal"><div class="h-bar-lbl">Indore</div><div class="h-bar-track"><div class="h-bar-fill" data-w="20.1" style="background:rgba(201,168,76,0.25);">₹81M</div></div></div>
+      <div class="h-bar-row reveal"><div class="h-bar-lbl">Chennai</div><div class="h-bar-track"><div class="h-bar-fill" data-w="26.4" style="background:rgba(201,168,76,0.3);">₹106M</div></div></div>
+      <div class="h-bar-row reveal"><div class="h-bar-lbl">Hyderabad</div><div class="h-bar-track"><div class="h-bar-fill" data-w="40" style="background:rgba(201,168,76,0.38);">₹161M</div></div></div>
+      <div class="h-bar-row reveal"><div class="h-bar-lbl">Mumbai</div><div class="h-bar-track"><div class="h-bar-fill" data-w="59.7" style="background:rgba(201,168,76,0.45);">₹240M</div></div></div>
+      <div class="h-bar-row reveal"><div class="h-bar-lbl" style="color:var(--gold);font-weight:700;">Delhi NCR</div><div class="h-bar-track"><div class="h-bar-fill" data-w="100" style="background:linear-gradient(90deg,#C9A84C,#F5C842);color:#0a0f1e;">₹402M</div></div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="insight-card reveal"><p style="font-size:0.78rem;color:#94a3b8;">Top 2 cities (Delhi NCR + Mumbai) = <strong style="color:var(--gold);">₹642M = 64.9%</strong> of total revenue</p></div>
+      <div class="insight-card reveal" style="border-left-color:var(--amber);"><p style="font-size:0.78rem;color:#94a3b8;">Chennai & Indore: consistent demand, currently <strong style="color:var(--amber);">underpenetrated</strong></p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 7 — THE PROFITABILITY TRAP
+═══════════════════════════════════════════════ -->
+<div class="slide" data-slide="7">
+  <div class="gradient-mesh">
+    <div class="blob blob-1" style="width:380px;height:380px;top:-80px;right:-80px;background:#ef4444;opacity:0.06;"></div>
+    <div class="blob blob-2" style="width:260px;height:260px;bottom:-60px;left:-40px;background:#C9A84C;opacity:0.07;"></div>
+  </div>
+  <div class="content">
+    <div class="section-tag reveal">Risk Exposure Layer</div>
+    <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.7rem,3.3vw,2.5rem);font-weight:700;color:var(--gold-light);margin-bottom:0.2rem;">The Older the Customer — the Less the Business Actually Earns.</h2>
+    <p class="reveal" style="font-size:0.83rem;color:var(--text-muted);margin-bottom:1rem;">Settlement risk doesn't distribute evenly. It follows age — and it escalates sharply.</p>
+    <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:1.2rem;">
+      <div>
+        <div id="risk-bars">
+          <div class="risk-row reveal"><div class="risk-label">18–24</div><div class="risk-track"><div class="risk-fill" data-w="39.3" style="background:#22c55e;"></div></div><div class="risk-pct">39.3%</div></div>
+          <div class="risk-row reveal"><div class="risk-label">25–30</div><div class="risk-track"><div class="risk-fill" data-w="46" style="background:#86efac;"></div></div><div class="risk-pct">46.0%</div></div>
+          <div class="risk-row reveal"><div class="risk-label">31–40</div><div class="risk-track"><div class="risk-fill" data-w="54.8" style="background:#f59e0b;"></div></div><div class="risk-pct">54.8%</div></div>
+          <div class="risk-row reveal"><div class="risk-label">41–50</div><div class="risk-track"><div class="risk-fill" data-w="60.3" style="background:#fb923c;"></div></div><div class="risk-pct">60.3%</div></div>
+          <div class="risk-row reveal"><div class="risk-label">51–65</div><div class="risk-track"><div class="risk-fill" data-w="64.8" style="background:#f87171;"></div></div><div class="risk-pct">64.8%</div></div>
+          <div class="risk-row reveal"><div class="risk-label">65+</div><div class="risk-track"><div class="risk-fill" data-w="72.3" style="background:#ef4444;"></div></div><div class="risk-pct">72.3%</div></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="kpi-card reveal" style="text-align:center;padding:0.9rem;"><div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.3rem;">Apr Total Revenue</div><div style="font-size:1.5rem;font-weight:800;color:var(--text);">₹153.75M</div></div>
+        <div style="text-align:center;font-size:1.4rem;color:var(--red);">↓</div>
+        <div class="kpi-card reveal" style="text-align:center;padding:0.9rem;border-color:rgba(239,68,68,0.25);"><div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.3rem;">Settlements Paid</div><div style="font-size:1.5rem;font-weight:800;color:var(--red);">−₹93.11M</div></div>
+        <div style="text-align:center;font-size:1.4rem;color:var(--gold);">↓</div>
+        <div class="kpi-card reveal" style="text-align:center;padding:0.9rem;border-color:rgba(201,168,76,0.35);"><div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.3rem;">Net Revenue · Margin</div><div style="font-size:1.5rem;font-weight:800;color:var(--gold);">₹60.64M · <span style="color:var(--green);">39.4%</span></div></div>
+        <p class="reveal" style="font-size:0.72rem;color:var(--text-muted);font-style:italic;text-align:center;">For every ₹1 collected — only ₹0.39 kept.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 8 — THE HIDDEN CHANNEL
+═══════════════════════════════════════════════ -->
+<div class="slide" data-slide="8">
+  <div class="gradient-mesh">
+    <div class="blob blob-1" style="width:380px;height:380px;top:-80px;right:-80px;background:#C9A84C;opacity:0.08;"></div>
+    <div class="blob blob-2" style="width:260px;height:260px;bottom:-60px;left:-40px;background:#8B6914;opacity:0.07;"></div>
+  </div>
+  <div class="content">
+    <div class="section-tag reveal">Channel Intelligence Layer</div>
+    <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.7rem,3.3vw,2.5rem);font-weight:700;color:var(--gold-light);margin-bottom:0.2rem;">One Channel Fell Half as Hard — and Matched It on Revenue Per Customer.</h2>
+    <p class="reveal" style="font-size:0.83rem;color:var(--gold);margin-bottom:1.2rem;">Online channels were quietly outperforming. Nobody had made it a priority.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1rem;">
+      <div class="kpi-card reveal" style="border-color:rgba(201,168,76,0.3);">
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold);margin-bottom:0.8rem;font-weight:700;">🟡 Online</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;justify-content:space-between;font-size:0.78rem;"><span style="color:var(--text-muted);">Apr Revenue</span><strong style="color:var(--text);">₹75M</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:0.78rem;"><span style="color:var(--text-muted);">Apr Share</span><strong style="color:var(--text);">48.6%</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:0.78rem;"><span style="color:var(--text-muted);">MoM Decline</span><strong style="color:var(--gold);">−25.5%</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:0.78rem;"><span style="color:var(--text-muted);">Rev / Customer</span><strong style="color:var(--green);">₹37,160</strong></div>
+        </div>
+      </div>
+      <div class="kpi-card reveal" style="border-color:rgba(239,68,68,0.2);">
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--red);margin-bottom:0.8rem;font-weight:700;">🔴 Offline</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;justify-content:space-between;font-size:0.78rem;"><span style="color:var(--text-muted);">Apr Revenue</span><strong style="color:var(--text);">₹79M</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:0.78rem;"><span style="color:var(--text-muted);">Apr Share</span><strong style="color:var(--text);">51.5%</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:0.78rem;"><span style="color:var(--text-muted);">MoM Decline</span><strong style="color:var(--red);">−51.6%</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:0.78rem;"><span style="color:var(--text-muted);">Rev / Customer</span><strong style="color:var(--text-sec);">₹36,970</strong></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="insight-card reveal"><p style="font-size:0.78rem;color:#94a3b8;">Offline fell <strong style="color:var(--red);">2× as hard</strong>. Online held the floor with the <strong style="color:var(--gold);">same revenue/customer</strong>.</p></div>
+      <div class="insight-card reveal" style="border-left-color:var(--amber);"><p style="font-size:0.78rem;color:#94a3b8;">Online = only <strong style="color:var(--gold);">28.7%</strong> overall adoption — yet <strong style="color:var(--amber);">nearly reached parity in April</strong>.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 9 — THE ANSWER
+═══════════════════════════════════════════════ -->
+<div class="slide" data-slide="9">
+  <div class="gradient-mesh">
+    <div class="blob blob-1" style="width:450px;height:450px;top:-90px;right:-90px;background:#C9A84C;opacity:0.1;"></div>
+    <div class="blob blob-2" style="width:300px;height:300px;bottom:-60px;left:-50px;background:#8B6914;opacity:0.08;"></div>
+  </div>
+  <div class="content">
+    <div class="section-tag reveal">The Answer</div>
+    <h2 class="reveal" style="font-family:'Cormorant',serif;font-size:clamp(1.9rem,3.8vw,3rem);font-weight:700;color:var(--gold-light);margin-bottom:0.3rem;">So — Was March a Fluke, or a Signal?</h2>
+    <p class="reveal" style="font-size:0.85rem;color:var(--gold);margin-bottom:0.5rem;">The data gives a clear answer. And it points to 5 specific actions.</p>
+    <p class="reveal" style="font-size:0.78rem;color:var(--text-muted);margin-bottom:1.2rem;font-style:italic;">The March spike was real momentum. But the business has structural vulnerabilities that need addressing before the next spike can be sustained.</p>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="rec-item reveal"><div class="rec-num">1</div><div style="font-size:0.8rem;color:var(--text-sec);">Identify the <strong style="color:var(--gold);">March growth driver</strong> — campaign, seasonal, or channel-led? Replicate if possible.</div></div>
+      <div class="rec-item reveal"><div class="rec-num">2</div><div style="font-size:0.8rem;color:var(--text-sec);">Double down on <strong style="color:var(--gold);">online channels</strong> — equal revenue/customer (₹37.16K) with 2× better resilience.</div></div>
+      <div class="rec-item reveal"><div class="rec-num">3</div><div style="font-size:0.8rem;color:var(--text-sec);">Expand into <strong style="color:var(--gold);">secondary cities</strong> — Chennai (₹106M) and Indore (₹81M) show consistent demand.</div></div>
+      <div class="rec-item reveal"><div class="rec-num">4</div><div style="font-size:0.8rem;color:var(--text-sec);">Segment <strong style="color:var(--gold);">underwriting by age</strong> — risk climbs from 39% to 72%; product pricing must reflect this.</div></div>
+      <div class="rec-item reveal"><div class="rec-num">5</div><div style="font-size:0.8rem;color:var(--text-sec);">Build a <strong style="color:var(--gold);">post-peak acquisition pipeline</strong> — acquisition fell from 7.1K to 4.1K in a single month.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 10 — THE CLOSE
+═══════════════════════════════════════════════ -->
+<div class="slide" data-slide="10">
+  <div class="gradient-mesh">
+    <div class="blob blob-1" style="width:600px;height:600px;top:-120px;right:-120px;background:#C9A84C;opacity:0.12;"></div>
+    <div class="blob blob-2" style="width:380px;height:380px;bottom:-100px;left:-80px;background:#8B6914;opacity:0.09;"></div>
+    <div class="blob blob-3" style="width:240px;height:240px;top:40%;left:5%;background:#E8D5B5;opacity:0.06;"></div>
+  </div>
+  <canvas class="particle-canvas-ambient" style="position:absolute;inset:0;z-index:1;width:100%;height:100%;"></canvas>
+  <div class="content" style="text-align:center;">
+    <div class="section-tag reveal">Portfolio Close</div>
+    <h2 class="reveal glow-pulse" style="font-family:'Cormorant',serif;font-size:clamp(2.2rem,5vw,4rem);font-weight:700;background:linear-gradient(135deg,#C9A84C,#E8D5B5,#C9A84C);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.4rem;line-height:1.15;">A ₹989M Revenue Story</h2>
+    <p class="reveal" style="font-size:clamp(1rem,2vw,1.4rem);color:var(--text-sec);margin-bottom:0.3rem;">Told Through Data, Structure, and Commercial Thinking.</p>
+    <p class="reveal" style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1.6rem;">This is what data analytics looks like in practice.</p>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:1.4rem;">
+      <div class="skill-chip reveal">Power BI</div>
+      <div class="skill-chip reveal">DAX</div>
+      <div class="skill-chip reveal">KPI Design</div>
+      <div class="skill-chip reveal">Exec Reporting</div>
+      <div class="skill-chip reveal">Risk Analysis</div>
+      <div class="skill-chip reveal">Segmentation</div>
+      <div class="skill-chip reveal">Channel Intel</div>
+      <div class="skill-chip reveal">Geo Analysis</div>
+      <div class="skill-chip reveal">Customer DNA</div>
+      <div class="skill-chip reveal">CXO Storytelling</div>
+    </div>
+    <div style="width:80px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 1.2rem;"></div>
+    <p class="reveal" style="font-size:clamp(0.9rem,1.7vw,1.15rem);color:var(--gold);font-style:italic;font-family:'Cormorant',serif;margin-bottom:1rem;">"The goal was never to build a dashboard. The goal was to answer a business question."</p>
+    <p class="reveal" style="font-size:0.75rem;color:var(--text-muted);letter-spacing:0.08em;">Anshul Chaudhary &nbsp;·&nbsp; Power BI &nbsp;·&nbsp; Python &nbsp;·&nbsp; Data Analytics</p>
+  </div>
+</div>
+
+</div><!-- end .deck -->
+
+<!-- NAV -->
+<div class="nav-controls">
+  <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592;</button>
+  <div class="slide-dots" id="dots"></div>
+  <span class="slide-counter" id="counter">1 / 10</span>
+  <button class="nav-btn" id="next-btn" onclick="navigate(1)">&#8594;</button>
+</div>
+
+<div style="position:fixed;inset:0;z-index:99;pointer-events:none;" id="spotlight"></div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const dotsEl = document.getElementById('dots');
+const counter = document.getElementById('counter');
+let current = 0;
+
+// Build dots
+slides.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===0?' active':'');
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+});
+
+function animateSlide(slide) {
+  // reveal elements
+  slide.querySelectorAll('.reveal').forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(22px)';
+    el.style.transition = 'none';
+    setTimeout(() => {
+      el.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
+      el.style.transitionDelay = (i * 0.08) + 's';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, 60);
+  });
+  // animate bars (vertical)
+  slide.querySelectorAll('.bar').forEach(b => {
+    b.style.transform = 'scaleY(0)';
+    setTimeout(() => {
+      b.style.transition = 'transform 0.7s cubic-bezier(0.34,1.56,0.64,1)';
+      b.style.transform = 'scaleY(1)';
+    }, 300);
+  });
+  // animate horizontal bars
+  slide.querySelectorAll('.h-bar-fill').forEach((b, i) => {
+    const w = b.dataset.w || '0';
+    b.style.width = '0%';
+    setTimeout(() => {
+      b.style.transition = 'width 0.8s cubic-bezier(0.25,1,0.5,1)';
+      b.style.width = w + '%';
+    }, 350 + i*80);
+  });
+  // animate risk fills
+  slide.querySelectorAll('.risk-fill').forEach((b, i) => {
+    const w = b.dataset.w || '0';
+    b.style.width = '0%';
+    setTimeout(() => {
+      b.style.transition = 'width 0.8s ease';
+      b.style.width = w + '%';
+    }, 350 + i*100);
+  });
+  // particles
+  slide.querySelectorAll('.particle-canvas,.particle-canvas-ambient').forEach(c => {
+    c.width = c.offsetWidth; c.height = c.offsetHeight;
+    initParticles(c, c.classList.contains('particle-canvas-ambient') ? {interactive:false,count:18} : {interactive:true,count:45});
+  });
+}
+
+function goTo(idx) {
+  slides[current].classList.remove('active');
+  dotsEl.children[current].classList.remove('active');
+  current = idx;
+  slides[current].classList.add('active');
+  dotsEl.children[current].classList.add('active');
+  counter.textContent = (current+1) + ' / ' + slides.length;
+  animateSlide(slides[current]);
+}
+
+function navigate(dir) {
+  const next = (current + dir + slides.length) % slides.length;
+  goTo(next);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') navigate(1);
+  if (e.key === 'ArrowLeft') navigate(-1);
+});
+
+// Spotlight
+document.addEventListener('mousemove', e => {
+  document.getElementById('spotlight').style.background =
+    `radial-gradient(600px circle at ${e.clientX}px ${e.clientY}px, rgba(201,168,76,0.045), transparent 40%)`;
+});
+
+// Particles
+function initParticles(canvas, options) {
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
+  const interactive = options.interactive !== false;
+  const count = options.count || 30;
+  let mx=-1000,my=-1000;
+  const particles = Array.from({length:count},()=>({
+    x:Math.random()*canvas.width, y:Math.random()*canvas.height,
+    vx:(Math.random()-0.5)*0.3, vy:(Math.random()-0.5)*0.3,
+    size:Math.random()*2+0.7, alpha:Math.random()*0.3+0.08
+  }));
+  if(interactive){
+    canvas.addEventListener('mousemove',e=>{const r=canvas.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;});
+    canvas.addEventListener('mouseleave',()=>{mx=-1000;my=-1000;});
+  }
+  (function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      if(interactive){const dx=p.x-mx,dy=p.y-my,dist=Math.sqrt(dx*dx+dy*dy);if(dist<120){const f=(120-dist)/120*2;p.vx+=(dx/dist)*f*0.1;p.vy+=(dy/dist)*f*0.1;}}
+      p.vx*=0.98;p.vy*=0.98;p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;
+      if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+      ctx.fillStyle=`rgba(201,168,76,${p.alpha})`;ctx.fill();
+    });
+    requestAnimationFrame(animate);
+  })();
+}
+
+// Init first slide
+animateSlide(slides[0]);
+</script>
+</body>
+</html>
