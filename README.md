@@ -1,216 +1,86 @@
-# 🛡️ Shield Insurance Analytics Dashboard
+# 🛡️ Shield Insurance Analytics Dashboard — V2
+### Executive Business Intelligence & Risk Intelligence Review
 
-> **Business Performance & Customer Behavior Insights**
-> A Power BI analytics project focused on revenue trends, customer segmentation, and sales channel performance across a 6-month period (Nov 2022 – Apr 2023).
+A CXO-level Power BI analytics case study analyzing revenue performance, 
+settlement risk exposure, channel effectiveness, and customer acquisition 
+trends across a 6-month operational window (Nov 2022 – Apr 2023).
 
 ---
 
-## 🚀 Overview
+## 🔄 V1 → V2: What Changed
 
-This project transforms raw insurance data into **decision-ready insights** to help the business:
+V1 tracked the right metrics but lacked a connecting narrative.  
+V2 was rebuilt with one question per page:  
+**"What decision does this support?"** — not "What can I show here?"
 
-* Understand revenue growth quality
-* Identify high-value customer segments
-* Evaluate sales channel effectiveness
-* Detect operational and strategic risks
+Key improvements:
+- Restructured data model — date, policy, and premium tables rebuilt with calculated columns, dedicated sorting tables, and age group mapping table
+- Added settlement risk segmentation by age group and channel resilience analysis
+- Rebuilt DAX measures — Online Adoption Rate, Settlement Risk %, Risk Ratio, Expected Payout
+- Reframed from reporting dashboard → executive decision-support system
 
 ---
 
 ## 📊 Dashboard Pages
 
-| Page                    | Description                                                 |
-| ----------------------- | ----------------------------------------------------------- |
-| **General View**        | KPIs, revenue & customer trends, city and age segmentation  |
-| **Sales Mode Analysis** | Revenue & customer distribution across channels with trends |
-| **Age Group Analysis**  | Customer demographics, policy behavior, settlement exposure |
+| Page | Purpose |
+|------|---------|
+| Revenue Overview | Revenue trends, peak/moderation detection, city concentration |
+| Customer & Channel Analysis | Acquisition trends, channel split, online adoption rate |
+| Settlement Risk Analysis | Risk ratio by age group, expected payout, high-risk segmentation |
+| Executive Summary | CXO-level narrative across all four dimensions |
 
 ---
 
-## 📊 Key Metrics (Unfiltered)
+## 📈 Key Findings (Nov 2022 – Apr 2023)
 
-| Metric                | Value     | vs Last Month |
-| --------------------- | --------- | ------------- |
-| Total Revenue         | 13.2M INR | +103.34%      |
-| Daily Revenue Growth  | 5.2M INR  | −35.61%       |
-| Total Customers       | 340       | +86.81%       |
-| Daily Customer Growth | 115       | −48.89%       |
-| Revenue Per Customer  | 38.9K INR | +8.79%        |
-| Avg Policy Value      | 37.1K INR | −0.54%        |
+| Metric | Value |
+|--------|-------|
+| Peak Revenue | ₹264M (March 2023) |
+| April Revenue | ₹154M (moderation signal) |
+| Delhi NCR Contribution | ₹402M (highest city concentration) |
+| Offline Channel Revenue Share | 71%+ |
+| 65+ Settlement Risk Ratio | 72.28% (highest across all age groups) |
 
----
-
-## 📊 Sales Channel Split
-
-| Channel        | Revenue % | Customer % |
-| -------------- | --------- | ---------- |
-| Offline-Agent  | 55.67%    | 55.41%     |
-| Online-App     | 16.27%    | 16.03%     |
-| Offline-Direct | 15.46%    | 15.86%     |
-| Online-Website | 12.60%    | 12.70%     |
+**Critical insight:** April's online vs. offline revenue drops appeared  
+similar in absolute terms — offline declined roughly twice as steeply  
+on a relative basis. This signal disappears in summary reports.
 
 ---
 
-## 👥 Age Group Distribution
+## 🛠️ Tools & Technical Stack
 
-| Age Group | Share  |
-| --------- | ------ |
-| 36–45     | 38.33% |
-| 26–35     | 24.67% |
-| 56+       | 15.18% |
-| 46–55     | 14.95% |
-| 18–25     | 6.87%  |
+Power BI · DAX · Power Query · Star Schema Modeling  
+Fact Tables: Premiums, Settlements  
+Dimension Tables: Customer, Date, Policies
 
 ---
 
-# 🔍 Key Insights (Data-Validated)
+## ⚠️ Business Risks Identified
 
-### 1. Growth is Strong but Not Sustainable
-
-**Fact:** Revenue increased +103.34% MoM, but daily revenue growth declined −35.61%
-**Interpretation:** Top-line growth is driven by accumulation, not consistent momentum
-**Impact:** Risk of future slowdown if growth drivers weaken
-
----
-
-### 2. Customer Acquisition is Slowing
-
-**Fact:** Daily customer growth dropped from 225 → 115 (−48.89%)
-**Interpretation:** New customer inflow is declining
-**Impact:** Future revenue growth may weaken
+- Heavy geographic concentration — Delhi NCR dependency
+- Offline channel structural dominance — digital adoption still early-stage
+- Elevated settlement exposure in 65+ demographic
+- April moderation signals potential acquisition consistency risk
 
 ---
 
-### 3. Offline-Agent Channel Dominates
-
-**Fact:** Contributes ~56% of both revenue and customers
-**Interpretation:** Business heavily relies on traditional distribution
-**Impact:** Limited scalability and high dependency on agent network
-
----
-
-### 4. Customer Value is Increasing Without Price Growth
-
-**Fact:** Revenue per customer +8.79%, Avg policy value −0.54%
-**Interpretation:** Customers are purchasing more policies or higher total coverage
-**Impact:** Strong monetization opportunity without pricing pressure
+## 📂 Repository Structure
+Shield-Insurance-Analytics/
+-├── v1/ → Original dashboard and analysis
+-├── v2/ → Rebuilt executive dashboard (this version)
+-└── README.md → Full project documentation
 
 ---
 
-### 5. 36–45 Segment Drives Maximum Value
-
-**Fact:** Largest segment (38.33%) with highest growth (+124.66%)
-**Interpretation:** Core revenue-driving customer group
-**Impact:** High ROI target for marketing and retention strategies
-
----
-
-### 6. Younger Segment (18–25) is Underpenetrated
-
-**Fact:** Only 6.87% share with lowest growth trend
-**Interpretation:** Weak adoption among younger customers
-**Impact:** Long-term growth opportunity
-
----
-
-### 7. 56+ Segment Carries Highest Risk Exposure
-
-**Fact:** Highest expected settlement liability (226M INR)
-**Interpretation:** High-risk segment despite moderate size
-**Impact:** Potential profitability pressure
-
----
-
-# ⚠️ Business Risks
-
-* Over-reliance on Offline-Agent channel
-* Declining customer acquisition rate
-* Revenue growth instability
-* High settlement exposure in older segments
-
----
-
-# 💡 Strategic Recommendations
-
-### 1. Scale Digital Channels
-
-* Increase investment in online acquisition
-* Reduce dependency on offline agents
-
-👉 Improves scalability and cost efficiency
-
----
-
-### 2. Focus on High-Value Segment (36–45)
-
-* Targeted campaigns
-* Personalized product offerings
-
-👉 Maximizes revenue impact
-
----
-
-### 3. Expand Younger Customer Base
-
-* Build digital-first products
-* Target 18–25 segment
-
-👉 Supports long-term growth
-
----
-
-### 4. Manage Risk Exposure (56+)
-
-* Refine pricing and underwriting
-* Monitor claims behavior
-
-👉 Protects profitability
-
----
-
-### 5. Stabilize Growth Strategy
-
-* Track leading indicators (daily growth)
-* Optimize acquisition channels
-
-👉 Ensures sustainable growth
-
----
-
-## 📂 Project Structure
-
-* 📊 Dashboard → Power BI file
-* 📄 Presentation → Business insights summary
-* 🖼️ Images → Dashboard previews
-* 📁 Docs → Feature list, metadata, mockups, references
-
----
-
-## ⚠️ Dataset Note
-
-Dataset is part of the **Codebasics Data Analytics Virtual Internship** and is not publicly shareable.
 
 ---
 
 ## 🎓 Acknowledgment
 
-This is an **unguided project** from:
+Case study developed as part of the  
+**Codebasics Data Analytics Bootcamp 5.0 — Virtual Internship**  
+Mentors: **Dhaval Patel** · **Hemanand Vadivel**
 
-**Codebasics Data Analytics Virtual Internship**
-
-Mentors:
-
-* Dhaval Patel
-* Hemanand Vadivel
-
----
-
-## 🚀 Outcome
-
-This project demonstrates:
-
-* Data-driven business analysis
-* Dashboard development using Power BI
-* Translation of data into actionable insights
-* Ability to think beyond reporting into decision-making
-
----
+⚠️ Dataset is part of the Codebasics Virtual Internship  
+and is not publicly shareable.
