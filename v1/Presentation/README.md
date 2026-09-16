@@ -4,7 +4,8 @@ This folder contains the business presentation summarizing key insights and reco
 
 ## 📁 File Included
 
-* **Shield_Insurance_Analysis.pdf** → Final presentation
+* **shield-insurance-analytics.pdf** → Final presentation
+* **shield-insurance-analytics.pptx** → Editable source deck
 
 ## 📌 Description
 

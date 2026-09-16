@@ -106,13 +106,12 @@ clean slicer logic across all dashboard pages.
 
 ## Repository Structure
 shield-insurance-analytics/
-├── v1/ Original dashboard build
-├── v2/
-│ ├── dashboard/ Power BI file
-│ ├── docs/ KPI definitions, DAX docs, data model
-│ ├── images/ Dashboard screenshots
-│ └── presentation/ Case study PDF
-└── assets/ Data model diagram
+├── v1/ Original dashboard build (Dashboard/, Docs/, Images/, Presentation/)
+└── v2/
+  ├── Dashboard/ Power BI file
+  ├── Docs/ KPI definitions, DAX docs, data model
+  ├── images/ Dashboard screenshots
+  └── Presentation/ Case study PDF + PPTX
 
 ---
 
@@ -141,6 +140,5 @@ Mentors: **Dhaval Patel** · **Hemanand Vadivel**
 > program and is not publicly shareable.
 ---
 **Built by :**
-- [Anshul](https://github.com/morid648) 
+- [Anshul](https://github.com/morid648)
 - [LinkedIn](https://www.linkedin.com/in/anshul-chaudhary-508138308/)
-- 
